@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Ejemplo Vue</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div id="app">
+        <!--Provincias-->
+        <h1>Provincias de Costa Rica</h1>
+        <hr />
+        <label for="label-prov">Seleccione una provincia:</label>
+        <select
+          href="javascript:void(0)"
+          name="prov"
+          id="prov"
+          v-on:change="getCantones()"
+        >
+          <option value="" selected disabled hidden>Seleccione</option>
+          <option v-for="provincia in provincias" v-bind:value="provincia.id">
+            {{provincia.nombre}}
+          </option>
+        </select>
+        <hr />
+
+        <!--Cantones-->
+        <label for="label-cant">Seleccione un canton: </label>
+        <select
+          href="javascript:void(0)"
+          name="cant"
+          id="cant"
+          v-on:change="getDistritos()"
+        >
+          <option value="" selected disabled hidden>Seleccione</option>
+          <option v-for="canton in cantones" v-bind:value="canton.id">
+            {{canton.nombre}}
+          </option>
+        </select>
+        <hr />
+
+        <!--Distritos-->
+        <label for="label-dist">Seleccione un distrito: </label>
+        <select href="javascript:void(0)" name="dist" id="dist">
+          <option value="" selected disabled hidden>Seleccione</option>
+          <option v-for="distrito in distritos">{{distrito.nombre}}</option>
+        </select>
+        <hr />
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data: {
+          provincias: [],
+          prov: "",
+          cantones: [],
+          cant: "",
+          distritos: [],
+        },
+        methods: {
+          getCantones: function () {
+            fetch("cantones.php", {
+              method: "POST",
+              dataType: "json",
+              body: JSON.stringify({ provincia: prov.value }),
+            })
+              .then((response) => response.json())
+              .then((json) => {
+                this.cantones = json;
+              });
+          },
+          getDistritos: function () {
+            fetch("distritos.php", {
+              method: "POST",
+              dataType: "json",
+              body: JSON.stringify({ canton: cant.value }),
+            })
+              .then((response) => response.json())
+              .then((json) => {
+                this.distritos = json;
+              });
+          },
+        },
+        created: function () {
+          fetch("provincias.php")
+            .then((response) => response.json())
+            .then((json) => {
+              this.provincias = json;
+            });
+        },
+      });
+    </script>
+  </body>
+</html>
